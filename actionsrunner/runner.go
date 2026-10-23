@@ -391,16 +391,6 @@ func (run *RunRunner) Run(runnerenv RunnerEnvironment, listenerctx, corectx cont
 									var err error
 									message, err = session.GetNextMessage(jobExecCtx)
 									if !errors.Is(err, context.Canceled) && message != nil {
-										if firstJobReceived && (strings.EqualFold(message.MessageType, "PipelineAgentJobRequest") ||
-											strings.EqualFold(message.MessageType, "RunnerJobRequest")) {
-											runnerenv.Printf("Skip deleting the duplicated job request, " +
-												"we hope that the actions service reschedules your job to a different runner\n")
-										} else {
-											err = session.DeleteMessage(joblisteningctx, message)
-											if err != nil {
-												runnerenv.Printf("Failed to delete message: %v\n", err)
-											}
-										}
 										if strings.EqualFold(message.MessageType, "JobCancellation") && cancelJob != nil {
 											message = nil
 											runnerenv.Printf("JobCancellation request received, cancel running job\n")
